@@ -29,7 +29,7 @@ export default class CurrencyPicker extends Component {
         animationType={"slide"}
         transparent={false}
         visible={this.props.visible}
-        onRequestClose={() => {alert("Picker has been closed.")}}
+        onRequestClose={() => {}}
         >
         <View style={{marginTop: 22}}>
           <ListView

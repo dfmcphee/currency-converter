@@ -36,11 +36,12 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 24,
     height: 64,
+    width: '100%',
     padding: 16,
     color: 'black',
     borderColor: 'gray',
     borderWidth: 1,
-    marginTop: 16
+    marginTop: 16,
   },
   centering: {
     alignItems: 'center',
@@ -99,6 +100,7 @@ export default class CurrencyConverter extends Component {
         <TextInput
           style={styles.textInput}
           keyboardType="numeric"
+          underlineColorAndroid="transparent"
           onChangeText={(inputValue) => {
             const inputRate = this.state.rates.get(this.state.inputCurrency);
             const outputRate = this.state.rates.get(this.state.outputCurrency);
@@ -118,6 +120,7 @@ export default class CurrencyConverter extends Component {
         <TextInput
           style={styles.textInput}
           keyboardType="numeric"
+          underlineColorAndroid="transparent"
           onChangeText={(outputValue) => {
             const inputRate = this.state.rates.get(this.state.inputCurrency);
             const outputRate = this.state.rates.get(this.state.outputCurrency);
@@ -143,7 +146,6 @@ export default class CurrencyConverter extends Component {
         <View style={styles.container}>
           <ActivityIndicator
             animating={this.state.loading}
-            style={[styles.centering, {height: 80}]}
             color="#9f9f9f"
             size="large"
           />
