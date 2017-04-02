@@ -6,8 +6,10 @@ import {
   Text,
   TouchableHighlight,
   View,
+  Image,
 } from 'react-native';
 
+import currencyMetadata from './CurrencyMetadata';
 
 const styles = StyleSheet.create({
   listHeader: {
@@ -15,10 +17,17 @@ const styles = StyleSheet.create({
     fontSize: 24
   },
   listItem: {
-    padding: 16,
-    borderColor: 'gray',
+    padding: 8,
+    paddingLeft: 16,
+    borderColor: '#c2c2c2',
     borderTopWidth: 1,
     width: '100%',
+  },
+  currency: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 });
 
@@ -40,11 +49,20 @@ export default class CurrencyPicker extends Component {
               )
             }}
             renderRow={(rowData) => {
+              if (!rowData || !currencyMetadata[rowData.code]) {
+                return null;
+              }
               return (
                 <TouchableHighlight
                   style={styles.listItem}
+                  underlayColor="#ececec"
                   onPress={() => this.props.selectCurrency(rowData.code)}>
-                  <Text>{rowData.code}</Text>
+                  <View style={styles.currency}>
+                    <Image style={{width: 32, height: 32, marginRight: 8,}}
+                      source={currencyMetadata[rowData.code].flag}
+                    />
+                    <Text>{currencyMetadata[rowData.code].label}</Text>
+                  </View>
                 </TouchableHighlight>
               );
             }}

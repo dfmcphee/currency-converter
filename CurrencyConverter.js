@@ -10,16 +10,35 @@ import {
   View,
   ListView,
   Modal,
-  TouchableHighlight
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+  Image,
+  Keyboard,
+  Linking,
 } from 'react-native';
 
 import {fetchRates} from './ratesService';
 import CurrencyPicker from './CurrencyPicker';
+import currencyMetadata from './CurrencyMetadata';
+
+const highlightColor = '#ececec';
+const borderColor = '#c2c2c2';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 32,
+    padding: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  block: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inner: {
+    flex: 1,
+    padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -27,11 +46,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 64,
     padding: 16,
-    borderColor: 'gray',
+    borderColor: borderColor,
     borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 16
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    marginTop: 16,
   },
   textInput: {
     fontSize: 24,
@@ -39,15 +58,27 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 16,
     color: 'black',
-    borderColor: 'gray',
+    borderColor: borderColor,
     borderWidth: 1,
     marginTop: 16,
   },
-  centering: {
+});
+
+const currency = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
   },
+  flag: {
+    width: 40,
+    height: 40,
+    marginRight: 16,
+  },
+  label: {
+    fontSize: 16
+  }
 });
 
 function calculateRate(input, inputRate, outputRate) {
@@ -56,7 +87,6 @@ function calculateRate(input, inputRate, outputRate) {
 }
 
 export default class CurrencyConverter extends Component {
-
   constructor(props) {
     super(props);
 
@@ -90,53 +120,89 @@ export default class CurrencyConverter extends Component {
     if (this.state.loading) { return null; }
 
     const rateOptions = [...this.state.rates.values()].map((rate) => {
+      const label = currencyMetadata[rate.code] ? currencyMetadata[rate.code].label : rate.code;
       return (
-        <Picker.Item key={rate.code} label={rate.code} value={rate.code} />
+        <Picker.Item key={rate.code} label={label} value={rate.code} />
       );
     });
 
     return(
-      <View style={styles.container}>
-        <TextInput
-          style={styles.textInput}
-          keyboardType="numeric"
-          underlineColorAndroid="transparent"
-          onChangeText={(inputValue) => {
-            const inputRate = this.state.rates.get(this.state.inputCurrency);
-            const outputRate = this.state.rates.get(this.state.outputCurrency);
-            const calculatedRate = calculateRate(parseFloat(inputValue), inputRate.rate, outputRate.rate);
-            const outputValue = Number.isNaN(calculatedRate) ? '0.00' : calculatedRate.toFixed(2).toString()
-            this.setState({
-              inputValue,
-              outputValue
-            });
-          }}
-          value={this.state.inputValue}
-        />
-        <TouchableHighlight style={styles.picker}
-          onPress={() => this.setState({activeCurrency: 'input'})}>
-          <Text>{this.state.inputCurrency}</Text>
-        </TouchableHighlight>
-        <TextInput
-          style={styles.textInput}
-          keyboardType="numeric"
-          underlineColorAndroid="transparent"
-          onChangeText={(outputValue) => {
-            const inputRate = this.state.rates.get(this.state.inputCurrency);
-            const outputRate = this.state.rates.get(this.state.outputCurrency);
-            const inputValue = calculateRate(parseFloat(outputValue), inputRate.rate, outputRate.rate);
-            this.setState({
-              inputValue: inputValue.toFixed(2).toString(),
-              outputValue
-            });
-          }}
-          value={this.state.outputValue}
-        />
-        <TouchableHighlight style={styles.picker}
-          onPress={() => this.setState({activeCurrency: 'output'})}>
-          <Text>{this.state.outputCurrency}</Text>
-        </TouchableHighlight>
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <View style={styles.block}>
+            <Text style={{fontSize: 32, fontWeight: 'bold'}}>Currency Converter</Text>
+          </View>
+          <View style={styles.inner}> 
+            <TextInput
+              style={styles.textInput}
+              keyboardType="numeric"
+              keyboardAppearance="dark"
+              underlineColorAndroid="transparent"
+              onChangeText={(inputValue) => {
+                const inputRate = this.state.rates.get(this.state.inputCurrency);
+                const outputRate = this.state.rates.get(this.state.outputCurrency);
+                const calculatedRate = calculateRate(parseFloat(inputValue), inputRate.rate, outputRate.rate);
+                const outputValue = Number.isNaN(calculatedRate) ? '0.00' : calculatedRate.toFixed(2).toString()
+                this.setState({
+                  inputValue,
+                  outputValue
+                });
+              }}
+              value={this.state.inputValue}
+            />
+            <TouchableHighlight style={styles.picker}
+              onPress={() => this.setState({activeCurrency: 'input'})}
+              underlayColor={highlightColor}
+            >
+              <View style={currency.container}>
+                <Image style={currency.flag}
+                  source={currencyMetadata[this.state.inputCurrency].flag}
+                />
+                <Text style={currency.label}>{currencyMetadata[this.state.inputCurrency].label}</Text>
+              </View>
+            </TouchableHighlight>
+            <TextInput
+              style={styles.textInput}
+              keyboardType="numeric"
+              keyboardAppearance="dark"
+              underlineColorAndroid="transparent"
+              onChangeText={(outputValue) => {
+                const inputRate = this.state.rates.get(this.state.inputCurrency);
+                const outputRate = this.state.rates.get(this.state.outputCurrency);
+                const inputValue = calculateRate(parseFloat(outputValue), inputRate.rate, outputRate.rate);
+                this.setState({
+                  inputValue: inputValue.toFixed(2).toString(),
+                  outputValue
+                });
+              }}
+              value={this.state.outputValue}
+            />
+            <TouchableHighlight style={styles.picker}
+              onPress={() => this.setState({activeCurrency: 'output'})}
+              underlayColor={highlightColor}
+            >
+              <View style={currency.container}>
+                <Image
+                  style={currency.flag}
+                  source={currencyMetadata[this.state.outputCurrency].flag}
+                />
+                
+                <Text style={currency.label}>{currencyMetadata[this.state.outputCurrency].label}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          
+          <View style={styles.block}>
+            <Text style={{fontSize: 14, margin: 8}}>Rates provided by the Bank of Canada</Text>
+            <TouchableHighlight
+              onPress={this.showTerms}
+              underlayColor={highlightColor}
+            >
+              <Text style={{fontSize: 12, padding: 8}}>View terms and conditions</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 
@@ -152,6 +218,10 @@ export default class CurrencyConverter extends Component {
         </View>
       );
     }
+  }
+
+  showTerms() {
+    Linking.openURL('http://www.bankofcanada.ca/terms/').catch(err => console.error('An error occurred', err));
   }
 
   render() {
