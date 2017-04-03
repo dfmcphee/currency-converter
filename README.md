@@ -1,6 +1,8 @@
 # Currency Converter
 
-![Currency converter screenshot](https://cl.ly/1S2q052X3P1S/Screen%20Shot%202017-04-02%20at%209.49.53%20PM.png)
+<img src="https://d3uepj124s5rcx.cloudfront.net/items/2x3b3g110g3G1d2l2H2N/Screen%20Shot%202017-04-02%20at%209.47.07%20PM.png" alt="Converter screenshot" width="200px">
+
+<img src="https://cl.ly/1M1g193p3T3m/Screen%20Shot%202017-04-02%20at%209.52.10%20PM.png" alt="Currency picker screenshot" width="200px">
 
 An iOS and Android app that will convert currencies using the Bank of Canada's rates.
 
