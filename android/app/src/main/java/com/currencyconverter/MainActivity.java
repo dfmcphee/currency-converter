@@ -1,4 +1,4 @@
-package com.currencyconverter;
+package com.dfmcphee.currencyconverter;
 
 import com.facebook.react.ReactActivity;
 

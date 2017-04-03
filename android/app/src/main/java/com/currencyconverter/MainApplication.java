@@ -1,4 +1,4 @@
-package com.currencyconverter;
+package com.dfmcphee.currencyconverter;
 
 import android.app.Application;
 

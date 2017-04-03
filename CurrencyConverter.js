@@ -27,40 +27,34 @@ const borderColor = '#c2c2c2';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  block: {
-    flex: 1,
+    padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
   inner: {
     flex: 1,
-    padding: 16,
+    padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
   picker: {
     width: '100%',
-    height: 64,
-    padding: 16,
+    height: 52,
+    padding: 8,
     borderColor: borderColor,
     borderWidth: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginTop: 16,
+    marginTop: 8,
   },
   textInput: {
     fontSize: 24,
-    height: 64,
     width: '100%',
-    padding: 16,
+    padding: 8,
     color: 'black',
     borderColor: borderColor,
     borderWidth: 1,
-    marginTop: 16,
+    marginTop: 8,
   },
 });
 
@@ -113,7 +107,69 @@ export default class CurrencyConverter extends Component {
       outputValue: '0.00',
       rates: new Map(),
       dataSource: dataSource.cloneWithRows([]),
+      keyboardVisible: false,
     }
+  }
+
+  componentWillMount () {
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow.bind(this));
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide.bind(this));
+  }
+
+  componentWillUnmount () {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
+  }
+
+  keyboardDidShow () {
+    this.setState({
+      keyboardVisible: true,
+    });
+  }
+
+  keyboardDidHide () {
+    this.setState({
+      keyboardVisible: false,
+    });
+  }
+
+  title() {
+    if (this.state.keyboardVisible) {
+      return null;
+    }
+    return (
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        marginLeft: 20,
+        width: '100%',
+      }}>
+        <Text style={{fontSize: 28, fontWeight: '600'}}>Currency Converter</Text>
+      </View>
+    );
+  }
+
+  footer() {
+    if (this.state.keyboardVisible) {
+      return null;
+    }
+    return (
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 8,
+      }}>
+        <Text style={{fontSize: 14, margin: 8}}>Rates provided by the Bank of Canada</Text>
+        <TouchableHighlight
+          onPress={this.showTerms}
+          underlayColor={highlightColor}
+        >
+          <Text style={{fontSize: 12, padding: 8}}>View terms and conditions</Text>
+        </TouchableHighlight>
+      </View>
+    );
   }
 
   converter() {
@@ -129,9 +185,7 @@ export default class CurrencyConverter extends Component {
     return(
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
-          <View style={styles.block}>
-            <Text style={{fontSize: 32, fontWeight: 'bold'}}>Currency Converter</Text>
-          </View>
+          {this.title()}
           <View style={styles.inner}> 
             <TextInput
               style={styles.textInput}
@@ -191,16 +245,7 @@ export default class CurrencyConverter extends Component {
               </View>
             </TouchableHighlight>
           </View>
-          
-          <View style={styles.block}>
-            <Text style={{fontSize: 14, margin: 8}}>Rates provided by the Bank of Canada</Text>
-            <TouchableHighlight
-              onPress={this.showTerms}
-              underlayColor={highlightColor}
-            >
-              <Text style={{fontSize: 12, padding: 8}}>View terms and conditions</Text>
-            </TouchableHighlight>
-          </View>
+          {this.footer()}
         </View>
       </TouchableWithoutFeedback>
     );
